@@ -2,6 +2,7 @@ from tkinter.constants import CASCADE
 
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.db import models
+from django.contrib.auth.models import User
 
 
 # Create your models here.
@@ -19,6 +20,8 @@ class WatchList(models.Model):
     description = models.CharField(max_length=1000)
     active=models.BooleanField(default=True)
     platform =models.ForeignKey(StreamPlatform, on_delete=models.CASCADE, related_name="watchlist")
+    avg_rating = models.FloatField(default=0)
+    number_rating = models.IntegerField(default=0)
     created = models.DateTimeField(auto_now_add=True)
 
 
@@ -26,6 +29,7 @@ class WatchList(models.Model):
         return self.title
 
 class Review(models.Model):
+    review_user = models.ForeignKey(User, on_delete=models.CASCADE)
     rating = models.PositiveIntegerField(validators=[MinValueValidator(1), MaxValueValidator(5)])
     comment = models.CharField(max_length=200, null=True)
     active = models.BooleanField(default=True)
@@ -34,4 +38,4 @@ class Review(models.Model):
     update = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return self.rating
+        return str(self.rating) + "|"+ self.watchlist.title
